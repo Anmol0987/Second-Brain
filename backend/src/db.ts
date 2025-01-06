@@ -1,15 +1,26 @@
-import mongoose from "mongoose";
+import mongoose, {model, Schema} from "mongoose";
 
-const connectDB = async () => {
-    try {
-      await mongoose.connect("mongodb://localhost:27017/brain")
-      console.log('MongoDB connected');
-    } catch (error) {
-      console.error('MongoDB connection error:', error);
-      process.exit(1);
-    }
-  };
+mongoose.connect("mongodb://localhost:27017/Second-Brain")
 
+const UserSchema = new Schema({
+  username: {type: String, unique: true},
+  password: String
+})
 
+export const UserModel = model("User", UserSchema);
 
-module.exports = connectDB;
+const ContentSchema = new Schema({
+  title: String,
+  link: String,
+  tags: [{type: mongoose.Types.ObjectId, ref: 'Tag'}],
+  type: String,
+  userId: {type: mongoose.Types.ObjectId, ref: 'User', required: true },
+})
+
+const LinkSchema = new Schema({
+  hash: String,
+  userId: {type: mongoose.Types.ObjectId, ref: 'User', required: true, unique: true },
+})
+
+export const LinkModel = model("Links", LinkSchema);
+export const ContentModel = model("Content", ContentSchema);
