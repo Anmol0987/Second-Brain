@@ -5,13 +5,13 @@ import { ShareIcon } from "../Icons/ShareIcon"
 interface CardProps {
     title: string;
     link: string;
-    tags?: string;
+    // tags?: string;
     type: "twitter" | "youtube";
 }
 
-export const Card = ({ title, link, tags, type }: CardProps) => {
+export const Card = ({ title, link, type }: CardProps) => {
     return (
-        <div className=" bg-white rounded-md border border-gray-200 p-4 min-h-48 max-w-80">
+        <div className=" bg-white rounded-md border border-gray-200 p-4  max-h-fit min-h-52 min-w-80 max-w-80">
             <div className="flex justify-between">
                 <div className="flex gap-3 items-center">
                     <DocumantIcon />
