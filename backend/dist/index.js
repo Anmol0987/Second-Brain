@@ -19,6 +19,7 @@ const jsonwebtoken_1 = __importDefault(require("jsonwebtoken"));
 const db_1 = require("./db");
 const config_1 = require("./config");
 const middleware_1 = require("./middleware");
+const util_1 = require("./util");
 const saltRounds = 10;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
@@ -86,14 +87,78 @@ app.post('/api/v1/content', middleware_1.authMiddleware, (req, res) => __awaiter
         message: "Content created successfully"
     });
 }));
-app.get('/api/v1/content', (req, res) => {
-});
-app.delete('/api/v1/content', (req, res) => {
-});
-app.get('/api/v1/brain/share', (req, res) => {
-});
-app.get('/api/v1/brain/:shareLink', (req, res) => {
-});
+app.get('/api/v1/content', middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    //@ts-ignore
+    const userId = req.userId;
+    const content = yield db_1.ContentModel.find({ userId: userId }).populate("userId", "username");
+    res.json(content);
+}));
+app.delete('/api/v1/content', middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const contentId = req.body.contentId;
+    yield db_1.ContentModel.deleteOne({
+        contentId,
+        //@ts-ignore
+        userId: req.userId
+    });
+}));
+app.get('/api/v1/brain/share', middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { share } = req.body;
+    if (share) {
+        //@ts-ignore
+        const existingHash = yield db_1.LinkModel.findOne({ userId: req.userId });
+        if (existingHash) {
+            res.json({
+                message: "Share link already exists",
+                link: `${req.protocol}://${req.get('host')}/api/v1/brain/${existingHash.hash}`
+            });
+        }
+        const hash = (0, util_1.hashGeneration)(20);
+        yield db_1.LinkModel.create({
+            //@ts-ignore
+            userId: req.userId,
+            hash
+        });
+        res.json({
+            message: "Share link created successfully",
+            link: `${req.protocol}://${req.get('host')}/api/v1/brain/${hash}`
+        });
+    }
+    else {
+        yield db_1.LinkModel.deleteOne({
+            //@ts-ignore
+            userId: req.userId
+        });
+        res.json({
+            message: "Share link deleted successfully"
+        });
+    }
+}));
+app.get('/api/v1/brain/:shareLink', (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const hash = req.params.shareLink;
+    const link = yield db_1.LinkModel.findOne({ hash });
+    if (!link) {
+        res.status(404).json({
+            message: "Share link not found"
+        });
+        return;
+    }
+    const content = yield db_1.ContentModel.find({
+        userId: link.userId
+    });
+    const user = yield db_1.UserModel.findOne({
+        _id: link.userId
+    });
+    if (!user) {
+        res.status(404).json({
+            message: "User not found"
+        });
+        return;
+    }
+    res.json({
+        content,
+        user: user.username
+    });
+}));
 app.listen(3000, () => {
     console.log('Server is running onn port 3000');
 });
