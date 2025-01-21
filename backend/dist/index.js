@@ -109,34 +109,55 @@ app.delete('/api/v1/content', middleware_1.authMiddleware, (req, res) => __await
     });
 }));
 app.post('/api/v1/brain/share', middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
-    const { share } = req.body;
-    if (share) {
-        //@ts-ignore
-        const existingHash = yield db_1.LinkModel.findOne({ userId: req.userId });
-        if (existingHash) {
-            res.json({
-                message: "Share link already exists",
-                hash: existingHash.hash
+    try {
+        const { share } = req.body;
+        if (share) {
+            //@ts-ignore
+            const existingHash = yield db_1.LinkModel.findOne({ userId: req.userId });
+            console.log("-----", existingHash);
+            if (existingHash && existingHash.hash) {
+                res.json({
+                    message: "Share link already exists",
+                    link: `${req.protocol}://${req.get('host')}/api/v1/brain/${existingHash.hash}`
+                });
+                return;
+            }
+            const hash = (0, util_1.hashGeneration)(20);
+            console.log("++++++++", hash);
+            const link = yield db_1.LinkModel.create({
+                //@ts-ignore
+                userId: req.userId,
+                hash
             });
+            console.log("+-+-+-+-", link);
+            res.json({
+                message: "Share link created successfully",
+                link: `${req.protocol}://${req.get('host')}/api/v1/brain/${link.hash}`
+            });
+            return;
         }
-        const hash = (0, util_1.hashGeneration)(20);
-        yield db_1.LinkModel.create({
-            //@ts-ignore
-            userId: req.userId,
-            hash
-        });
-        res.json({
-            message: "Share link created successfully",
-            link: `${req.protocol}://${req.get('host')}/api/v1/brain/${hash}`
-        });
+        else {
+            const deletionResult = yield db_1.LinkModel.deleteOne({
+                //@ts-ignore
+                userId: req.userId
+            });
+            if (deletionResult.deletedCount > 0) {
+                res.json({
+                    message: "Share link deleted successfully"
+                });
+            }
+            else {
+                res.status(404).json({
+                    message: "No share link found to delete"
+                });
+            }
+            return;
+        }
     }
-    else {
-        yield db_1.LinkModel.deleteOne({
-            //@ts-ignore
-            userId: req.userId
-        });
-        res.json({
-            message: "Share link deleted successfully"
+    catch (error) {
+        console.error("Error in /api/v1/brain/share endpoint:", error);
+        res.status(500).json({
+            message: "An error occurred"
         });
     }
 }));

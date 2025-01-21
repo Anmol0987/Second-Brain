@@ -11,6 +11,7 @@ const SplitText = ({
     threshold = 0.1,
     rootMargin = '-100px',
     textAlign = 'center',
+    //@ts-ignore
     onLetterAnimationComplete,
 }) => {
     const letters = text.split('');
@@ -38,9 +39,11 @@ const SplitText = ({
 
     const springs = useSprings(
         letters.length,
+        //@ts-ignore
         letters.map((_, i) => ({
             from: animationFrom,
             to: inView
+                //@ts-ignore
                 ? async (next) => {
                     await next(animationTo);
                     animatedCount.current += 1;
@@ -55,14 +58,16 @@ const SplitText = ({
     );
 
     return (
-        <p
+        <p//@ts-ignore
             ref={ref}
             className={`split-parent overflow-hidden inline ${className}`}
+            //@ts-ignore
             style={{ textAlign }}
         >
             {springs.map((props, index) => (
                 <animated.span
                     key={index}
+                    //@ts-ignore
                     style={props}
                     className="inline-block transform transition-opacity will-change-transform"
                 >

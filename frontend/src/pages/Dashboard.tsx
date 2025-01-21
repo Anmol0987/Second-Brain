@@ -22,6 +22,7 @@ export function Dashboard() {
         <div className="p-4 ml-72 min-h-screen bg-gray-100 border-2">
             <AddContentModal open={modalOpen} onclose={() => {
                 setModalOpen(false);
+                console.log(modalOpen)
             }} />
             <div className="flex justify-end gap-4">
                 <Button onClick={() => {
@@ -30,13 +31,12 @@ export function Dashboard() {
                 <Button onClick={async () => {
                     const response = await axios.post(`${BACKEND_URL}/brain/share`, {
                         share: true
-                    }, {
+                    }, {    
                         headers: {
                             "Authorization": localStorage.getItem("token")
-                        }       
+                        }
                     });
-                    const shareUrl = `http://localhost:5173/share/${response.data.hash}`;
-                    navigator.clipboard.writeText(shareUrl)
+                    navigator.clipboard.writeText(response.data.link);
                     alert("Copied to clipboard");
                 }} variant="secondary" title="Share brain" startIcon={<ShareIcon />}></Button>
             </div>

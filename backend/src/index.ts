@@ -108,41 +108,60 @@ app.delete('/api/v1/content', authMiddleware, async (req: Request, res: Response
         userId: req.userId
     })
 });
-app.post('/api/v1/brain/share', authMiddleware, async (req: Request, res: Response) => {
-    const { share } = req.body;
+app.post('/api/v1/brain/share', authMiddleware, async (req: Request, res: Response): Promise<void> => {
+    try {
+        const { share } = req.body;
 
-    if (share) {
-        //@ts-ignore
-        const existingHash = await LinkModel.findOne({ userId: req.userId });
-        if (existingHash) {
-            res.json({
-                message: "Share link already exists",
-                hash:existingHash.hash
+        if (share) {
+            //@ts-ignore
+            const existingHash = await LinkModel.findOne({ userId: req.userId });
+            console.log("-----",existingHash)
+            if (existingHash && existingHash.hash) {
+                res.json({
+                    message: "Share link already exists",
+                    link: `${req.protocol}://${req.get('host')}/api/v1/brain/${existingHash.hash}`
+                });
+                return;
+            }
+
+            const hash = hashGeneration(20);
+            console.log("++++++++",hash)
+            const link= await LinkModel.create({
+                //@ts-ignore
+                userId: req.userId,
+                hash
             });
-        }
+            console.log("+-+-+-+-",link)
+            res.json({
+                message: "Share link created successfully",
+                link: `${req.protocol}://${req.get('host')}/api/v1/brain/${link.hash}`
+            });
+            return;
+        } else {
+            const deletionResult = await LinkModel.deleteOne({
+                //@ts-ignore
+                userId: req.userId
+            });
 
-        const hash = hashGeneration(20)
-        await LinkModel.create({
-            //@ts-ignore
-            userId: req.userId,
-            hash
-        });
-        res.json({
-            message: "Share link created successfully",
-            link: `${req.protocol}://${req.get('host')}/api/v1/brain/${hash}`
-        });
-    }
-    else {
-        await LinkModel.deleteOne({
-            //@ts-ignore
-            userId: req.userId
-        });
-        res.json({
-            message: "Share link deleted successfully"
+            if (deletionResult.deletedCount > 0) {
+                res.json({
+                    message: "Share link deleted successfully"
+                });
+            } else {
+                res.status(404).json({
+                    message: "No share link found to delete"
+                });
+            }
+            return;
+        }
+    } catch (error) {
+        console.error("Error in /api/v1/brain/share endpoint:", error);
+        res.status(500).json({
+            message: "An error occurred"
         });
     }
- 
 });
+
 app.get('/api/v1/brain/:shareLink', async (req: Request, res: Response) => {
 
     const hash = req.params.shareLink;
