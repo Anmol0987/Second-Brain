@@ -1,17 +1,19 @@
 import express from 'express';
 import { Request, Response } from 'express';
 import { z } from 'zod';
-import bcrypt from 'bcrypt';
+import bcrypt, { hash } from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import { ContentModel, LinkModel, UserModel } from "./db";
 import { jwtSecret } from './config';
 import { authMiddleware } from './middleware';
 import { hashGeneration } from './util';
+import cors from 'cors';
 
 const saltRounds = 10;
 
 const app = express();
 app.use(express.json());
+app.use(cors());
 
 const signupSchema = z.object({
     username: z.string().min(3, 'Username must be at least 3 characters').nonempty(),
@@ -23,6 +25,7 @@ const signupSchema = z.object({
 app.post("/api/v1/signup", async (req: Request, res: Response) => {
     try {
         const result = signupSchema.safeParse(req.body);
+        console.log(result)
         if (!result.success) {
             res.status(400).json({
                 message: result.error.errors
@@ -39,10 +42,12 @@ app.post("/api/v1/signup", async (req: Request, res: Response) => {
             username: result.data?.username,
             password: hashedPassword
         })
+        console.log("here")
         res.json({
             message: "User signed up"
         })
     } catch (e) {
+        console.log("heree")
         res.status(411).json({
             message: "User already exists"
         })
@@ -72,10 +77,12 @@ app.post('/api/v1/signin', async (req: Request, res: Response) => {
 app.post('/api/v1/content', authMiddleware, async (req: Request, res: Response) => {
 
     const link = req.body.link;
+    const title = req.body.title;
     const type = req.body.type;
     await ContentModel.create({
         link,
         type,
+        title,
         //@ts-ignore
         userId: req.userId,
         tags: []
@@ -88,8 +95,8 @@ app.post('/api/v1/content', authMiddleware, async (req: Request, res: Response) 
 app.get('/api/v1/content', authMiddleware, async (req: Request, res: Response) => {
     //@ts-ignore
     const userId = req.userId;
-    const content = await ContentModel.find({ userId: userId }).populate("userId", "username");
-    res.json(content);
+    const contents = await ContentModel.find({ userId: userId }).populate("userId", "username");
+    res.json(contents);
 
 });
 app.delete('/api/v1/content', authMiddleware, async (req: Request, res: Response) => {
@@ -101,7 +108,7 @@ app.delete('/api/v1/content', authMiddleware, async (req: Request, res: Response
         userId: req.userId
     })
 });
-app.get('/api/v1/brain/share', authMiddleware, async (req: Request, res: Response) => {
+app.post('/api/v1/brain/share', authMiddleware, async (req: Request, res: Response) => {
     const { share } = req.body;
 
     if (share) {
@@ -110,7 +117,7 @@ app.get('/api/v1/brain/share', authMiddleware, async (req: Request, res: Respons
         if (existingHash) {
             res.json({
                 message: "Share link already exists",
-                link: `${req.protocol}://${req.get('host')}/api/v1/brain/${existingHash.hash}`
+                hash:existingHash.hash
             });
         }
 

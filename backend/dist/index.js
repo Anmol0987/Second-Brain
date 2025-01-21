@@ -20,9 +20,11 @@ const db_1 = require("./db");
 const config_1 = require("./config");
 const middleware_1 = require("./middleware");
 const util_1 = require("./util");
+const cors_1 = __importDefault(require("cors"));
 const saltRounds = 10;
 const app = (0, express_1.default)();
 app.use(express_1.default.json());
+app.use((0, cors_1.default)());
 const signupSchema = zod_1.z.object({
     username: zod_1.z.string().min(3, 'Username must be at least 3 characters').nonempty(),
     password: zod_1.z.string().min(6, 'Password must be at least 6 characters').nonempty()
@@ -31,6 +33,7 @@ app.post("/api/v1/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
     var _a, _b, _c;
     try {
         const result = signupSchema.safeParse(req.body);
+        console.log(result);
         if (!result.success) {
             res.status(400).json({
                 message: result.error.errors
@@ -46,11 +49,13 @@ app.post("/api/v1/signup", (req, res) => __awaiter(void 0, void 0, void 0, funct
             username: (_c = result.data) === null || _c === void 0 ? void 0 : _c.username,
             password: hashedPassword
         });
+        console.log("here");
         res.json({
             message: "User signed up"
         });
     }
     catch (e) {
+        console.log("heree");
         res.status(411).json({
             message: "User already exists"
         });
@@ -75,10 +80,12 @@ app.post('/api/v1/signin', (req, res) => __awaiter(void 0, void 0, void 0, funct
 }));
 app.post('/api/v1/content', middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const link = req.body.link;
+    const title = req.body.title;
     const type = req.body.type;
     yield db_1.ContentModel.create({
         link,
         type,
+        title,
         //@ts-ignore
         userId: req.userId,
         tags: []
@@ -90,8 +97,8 @@ app.post('/api/v1/content', middleware_1.authMiddleware, (req, res) => __awaiter
 app.get('/api/v1/content', middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     //@ts-ignore
     const userId = req.userId;
-    const content = yield db_1.ContentModel.find({ userId: userId }).populate("userId", "username");
-    res.json(content);
+    const contents = yield db_1.ContentModel.find({ userId: userId }).populate("userId", "username");
+    res.json(contents);
 }));
 app.delete('/api/v1/content', middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentId = req.body.contentId;
@@ -101,7 +108,7 @@ app.delete('/api/v1/content', middleware_1.authMiddleware, (req, res) => __await
         userId: req.userId
     });
 }));
-app.get('/api/v1/brain/share', middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+app.post('/api/v1/brain/share', middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const { share } = req.body;
     if (share) {
         //@ts-ignore
@@ -109,7 +116,7 @@ app.get('/api/v1/brain/share', middleware_1.authMiddleware, (req, res) => __awai
         if (existingHash) {
             res.json({
                 message: "Share link already exists",
-                link: `${req.protocol}://${req.get('host')}/api/v1/brain/${existingHash.hash}`
+                hash: existingHash.hash
             });
         }
         const hash = (0, util_1.hashGeneration)(20);
@@ -142,9 +149,11 @@ app.get('/api/v1/brain/:shareLink', (req, res) => __awaiter(void 0, void 0, void
         });
         return;
     }
+    //for content
     const content = yield db_1.ContentModel.find({
         userId: link.userId
     });
+    //to get user-details
     const user = yield db_1.UserModel.findOne({
         _id: link.userId
     });

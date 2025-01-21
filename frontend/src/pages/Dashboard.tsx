@@ -1,33 +1,53 @@
+import { useEffect, useState } from "react"
 import { Button } from "../components/Button"
-import { ShareIcon } from "../Icons/ShareIcon"
-import { PlusIcon } from "../Icons/PlusIcon"
 import { Card } from "../components/Card"
 import { AddContentModal } from "../components/AddContentModal"
+import { PlusIcon } from "../Icons/PlusIcon"
+import { ShareIcon } from "../Icons/ShareIcon"
 import { SideBar } from "../components/SideBar"
-import { useState } from "react"
+import { useContent } from "../hooks/useContent"
+import { BACKEND_URL } from "../config"
+import axios from "axios"
 
-export const Dashboard = () => {
-
+export function Dashboard() {
     const [modalOpen, setModalOpen] = useState(false);
-    return (
-        <>
-            <SideBar />
-            <div className="p-4 ml-72 min-h-screen bg-gray-100 border-2">
-                <AddContentModal open={modalOpen} onclose={() => { setModalOpen(false) }} />
+    const { userContents, refresh } = useContent();
 
-                <div className=" p-4">
-                    <div className="flex justify-end gap-4">
-                        <Button onClick={() => { setModalOpen(true) }} title="Add Content" variant="primary" startIcon={<PlusIcon />} />
-                        <Button title="Share Brain" variant="secondary" startIcon={<ShareIcon />} />
-                    </div>
+    useEffect(() => {
+        refresh();
+    }, [modalOpen])
 
-                    <div className=" flex gap-4 ">
-                        <Card title="kzjfblkd" type="twitter" link="https://x.com/radbro/status/1876163621878890600" />
-                        <Card title="klkl" type="youtube" link="https://www.youtube.com/watch?v=iO_-GtgEYcM&ab_channel=AbhishekYadav" />
-                    </div>
-                </div>
-
+    return <div>
+        <SideBar />
+        <div className="p-4 ml-72 min-h-screen bg-gray-100 border-2">
+            <AddContentModal open={modalOpen} onclose={() => {
+                setModalOpen(false);
+            }} />
+            <div className="flex justify-end gap-4">
+                <Button onClick={() => {
+                    setModalOpen(true)
+                }} variant="primary" title="Add content" startIcon={<PlusIcon />}></Button>
+                <Button onClick={async () => {
+                    const response = await axios.post(`${BACKEND_URL}/brain/share`, {
+                        share: true
+                    }, {
+                        headers: {
+                            "Authorization": localStorage.getItem("token")
+                        }       
+                    });
+                    const shareUrl = `http://localhost:5173/share/${response.data.hash}`;
+                    navigator.clipboard.writeText(shareUrl)
+                    alert("Copied to clipboard");
+                }} variant="secondary" title="Share brain" startIcon={<ShareIcon />}></Button>
             </div>
-        </>
-    )
+
+            <div className="flex gap-4 flex-wrap mt-2">
+                {userContents?.map(({ type, link, title }) => <Card
+                    type={type}
+                    link={link}
+                    title={title}
+                />)}
+            </div>
+        </div>
+    </div>
 }
