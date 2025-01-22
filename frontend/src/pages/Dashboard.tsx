@@ -17,6 +17,8 @@ export function Dashboard() {
         refresh();
     }, [modalOpen])
 
+
+
     return <div>
         <SideBar />
         <div className="p-4 ml-72 min-h-screen bg-gray-100 border-2">
@@ -46,6 +48,7 @@ export function Dashboard() {
                     type={type}
                     link={link}
                     title={title}
+                    onDelete={() => refresh()}
                 />)}
             </div>
         </div>

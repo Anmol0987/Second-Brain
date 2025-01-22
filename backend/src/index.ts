@@ -99,14 +99,17 @@ app.get('/api/v1/content', authMiddleware, async (req: Request, res: Response) =
     res.json(contents);
 
 });
-app.delete('/api/v1/content', authMiddleware, async (req: Request, res: Response) => {
 
+app.delete('/api/v1/content', authMiddleware, async (req: Request, res: Response) => {
     const contentId = req.body.contentId;
-    await ContentModel.deleteOne({
-        contentId,
+    const link = req.body.link;
+    console.log(link)
+    const response = await ContentModel.deleteOne({
+       link,
         //@ts-ignore
         userId: req.userId
     })
+    res.json(response)
 });
 app.post('/api/v1/brain/share', authMiddleware, async (req: Request, res: Response): Promise<void> => {
     try {

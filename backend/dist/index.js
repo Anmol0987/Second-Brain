@@ -102,11 +102,14 @@ app.get('/api/v1/content', middleware_1.authMiddleware, (req, res) => __awaiter(
 }));
 app.delete('/api/v1/content', middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     const contentId = req.body.contentId;
-    yield db_1.ContentModel.deleteOne({
-        contentId,
+    const link = req.body.link;
+    console.log(link);
+    const response = yield db_1.ContentModel.deleteOne({
+        link,
         //@ts-ignore
         userId: req.userId
     });
+    res.json(response);
 }));
 app.post('/api/v1/brain/share', middleware_1.authMiddleware, (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
