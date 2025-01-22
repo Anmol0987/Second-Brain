@@ -3,6 +3,7 @@ import { Dashboard } from './pages/Dashboard'
 import { Signin } from './pages/Signin'
 import { SignUp } from './pages/SignUp'
 import { LandingPage } from './pages/LandingPage'
+import { SharedBrain } from './pages/SharedBrain'
 function App() {
 
   return (
@@ -12,6 +13,7 @@ function App() {
         <Route path="/signin" element={<Signin />} />
         <Route path="/signup" element={<SignUp />} />
         <Route path="/Dashboard" element={<Dashboard />} />
+        <Route  path="/brain/:hash" element={<SharedBrain />} />
       </Routes>
     </BrowserRouter>
   )

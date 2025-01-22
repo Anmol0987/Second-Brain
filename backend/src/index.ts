@@ -105,7 +105,7 @@ app.delete('/api/v1/content', authMiddleware, async (req: Request, res: Response
     const link = req.body.link;
     console.log(link)
     const response = await ContentModel.deleteOne({
-       link,
+        link,
         //@ts-ignore
         userId: req.userId
     })
@@ -118,26 +118,26 @@ app.post('/api/v1/brain/share', authMiddleware, async (req: Request, res: Respon
         if (share) {
             //@ts-ignore
             const existingHash = await LinkModel.findOne({ userId: req.userId });
-            console.log("-----",existingHash)
+            console.log("-----", existingHash)
             if (existingHash && existingHash.hash) {
                 res.json({
                     message: "Share link already exists",
-                    link: `${req.protocol}://${req.get('host')}/api/v1/brain/${existingHash.hash}`
+                     link: `http://localhost:5173/brain/${existingHash.hash}`
                 });
                 return;
             }
 
             const hash = hashGeneration(20);
-            console.log("++++++++",hash)
-            const link= await LinkModel.create({
+            console.log("++++++++", hash)
+            const link = await LinkModel.create({
                 //@ts-ignore
                 userId: req.userId,
                 hash
             });
-            console.log("+-+-+-+-",link)
+            console.log("+-+-+-+-", link)
             res.json({
                 message: "Share link created successfully",
-                link: `${req.protocol}://${req.get('host')}/api/v1/brain/${link.hash}`
+                link: `http://localhost:5173/brain/${link.hash}`
             });
             return;
         } else {

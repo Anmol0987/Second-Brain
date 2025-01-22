@@ -121,7 +121,7 @@ app.post('/api/v1/brain/share', middleware_1.authMiddleware, (req, res) => __awa
             if (existingHash && existingHash.hash) {
                 res.json({
                     message: "Share link already exists",
-                    link: `${req.protocol}://${req.get('host')}/api/v1/brain/${existingHash.hash}`
+                    link: `http://localhost:5173/brain/${existingHash.hash}`
                 });
                 return;
             }
@@ -135,7 +135,7 @@ app.post('/api/v1/brain/share', middleware_1.authMiddleware, (req, res) => __awa
             console.log("+-+-+-+-", link);
             res.json({
                 message: "Share link created successfully",
-                link: `${req.protocol}://${req.get('host')}/api/v1/brain/${link.hash}`
+                link: `http://localhost:5173/brain/${link.hash}`
             });
             return;
         }
