@@ -1,5 +1,5 @@
 import { SideBarContent } from "./SideBarContent"
-import { Brain,Twitter,Youtube } from "lucide-react"
+import { Brain, LogOut, Twitter, Youtube } from "lucide-react"
 
 
 
@@ -12,9 +12,17 @@ export const SideBar = () => {
                 </div>
                 Second-Brain
             </div>
-            <div className="pt-8 pl-4">
-                <SideBarContent text="Twitter" icon={<Twitter className="h-8 w-8 text-blue-500"  />} />
-                <SideBarContent text="Youtube" icon={<Youtube className="h-8 w-8 text-red-500" />} />
+            <div className="flex justify-between flex-col h-[85vh]  "> 
+                <div className="pt-8 pl-4">
+                    <SideBarContent text="Twitter" icon={<Twitter className="h-8 w-8 text-blue-500" />} />
+                    <SideBarContent text="Youtube" icon={<Youtube className="h-8 w-8 text-red-500" />} />
+                </div>
+                <div onClick={() =>{
+                    localStorage.removeItem("token");
+                    window.location.href = "/signin";
+                }} className="pt-8 pl-3 ">
+                <SideBarContent text="Logout" icon={<LogOut className="h-8 w-8 rotate-180 text-gray-500" />} />
+                </div>
             </div>
         </div>
     )

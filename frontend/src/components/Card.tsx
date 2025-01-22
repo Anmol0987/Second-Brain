@@ -10,27 +10,28 @@ interface CardProps {
     onDelete?: (link: string) => void
 }
 
-export const Card = ({ title, link, type,onDelete }: CardProps) => {
+export const Card = ({ title, link, type, onDelete }: CardProps) => {
 
     const deleteHandler = () => {
-        axios.delete(`${BACKEND_URL}/content`, {data: {link},
+        axios.delete(`${BACKEND_URL}/content`, {
+            data: { link },
             headers: {
                 "Authorization": localStorage.getItem("token")
             }
         }).then(() => {
             onDelete?.(link);
         })
-        .catch((e) => {
-            console.log(e);
-            alert("delete failed")
-        })
+            .catch((e) => {
+                console.log(e);
+                alert("delete failed")
+            })
 
     }
 
 
 
     return (
-        <div className=" bg-white rounded-md border border-gray-200 p-4  max-h-fit min-h-52 min-w-80 max-w-80">
+        <div className=" bg-white rounded-md border border-gray-200 p-4 max-h-fit min-h-72 min-w-96 max-w-96">
             <div className="flex justify-between">
                 <div className="flex gap-3 items-center">
                     {type === "youtube" && <Youtube className="text-red-600" />}
@@ -43,8 +44,8 @@ export const Card = ({ title, link, type,onDelete }: CardProps) => {
                 </div>
             </div>
             <div className="pt-2">
-                {type === "youtube" && <iframe className="w-full" src={link.replace("watch", "embed").replace("?v=", "/").split("&")[0]} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>}
-                {type === "twitter" && <blockquote className="twitter-tweet">
+                {type === "youtube" && <iframe className="w-full h-60" src={link.replace("watch", "embed").replace("?v=", "/").split("&")[0]} title="YouTube video player" frameBorder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerPolicy="strict-origin-when-cross-origin" allowFullScreen></iframe>}
+                {type === "twitter" && <blockquote className="twitter-tweet w-full h-60">
                     <a href={link.replace("x.com", "twitter.com")}></a>
                 </blockquote>}
             </div>

@@ -3,7 +3,7 @@ import { ReactElement } from "react";
 export interface ButtonProps {
     title: string;
     onClick?: () => void;
-    variant?: "primary" | "secondary ";
+    variant?: "primary" | "secondary";
     loading?: boolean;
     startIcon?: ReactElement;
     fullWidth?: boolean;
