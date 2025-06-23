@@ -14,12 +14,14 @@ export const Signin = () => {
      function signin() {
         const username = usernameref.current?.value
         const password = passwordref.current?.value
+        console.log(username, password)
         axios.post(`${BACKEND_URL}/signin`, { username, password })
             .then((res) => {
+
                 localStorage.setItem("token", res.data.token)
                 navigate("/dashboard")
             })
-            .catch((e) => {
+            .catch(() => {
                 alert("signin failed")
             })
     }

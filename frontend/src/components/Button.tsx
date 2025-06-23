@@ -19,6 +19,7 @@ const defaultStyles = "px-4 py-2 text-md rounded-md flex gap-2 items-center just
 
 
 export const Button = ({title,onClick,variant,loading,fullWidth,startIcon,classname}: ButtonProps) => {
+    //@ts-ignore
     return <button onClick={onClick} className={variantStyles[variant] + " " + defaultStyles + " "+ classname+  `${fullWidth ? " w-full flex justify-center items-center" : ""} ${loading ? "opacity-45	" : ""}`} disabled={loading}>
     <div className="pr-2">
         {startIcon}

@@ -15,7 +15,7 @@ export const SignUp = () => {
         const username = usernameref.current?.value
         const password = passwordref.current?.value
         axios.post(`${BACKEND_URL}/signup`, { username, password })
-            .then((res) => {
+            .then(() => {
                 navigate("/signin")
                 alert("signup success")
             })
