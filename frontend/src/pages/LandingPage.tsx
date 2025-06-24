@@ -149,10 +149,17 @@ export const LandingPage = () => {
                         </div>
 
                         {/* Active Users Badge */}
-                        <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-white px-8 py-4 rounded-full shadow-lg border border-purple-100 flex items-center space-x-2">
+                            
+{/*                         <div className="absolute -bottom-6 left-1/2 transform -translate-x-1/2 bg-white px-8 py-4 rounded-full shadow-lg border border-purple-100 flex items-center space-x-2">
                             <span className="h-3 w-3 rounded-full bg-purple-500" />
                             <span className="text-gray-600 font-medium">1,000+ active users</span>
-                        </div>
+                        </div> */}
+
+                        <span className="relative flex h-3 w-3">
+  <span className="animate-pulseDot absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+  <span className="relative inline-flex rounded-full h-3 w-3 bg-red-500"></span>
+</span>
+
                     </div>
                 </div>
             </div>
