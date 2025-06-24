@@ -37,7 +37,7 @@ jobs:
       - name: Deploy to DigitalOcean VM
         run: |
             mkdir -p ~/.ssh
-            printf "%s" "${{ secrets.DO_SSH_KEY }}" > ~/.ssh/id_rsa
+            echo "${{ secrets.DO_SSH_KEY }}" > ~/.ssh/id_rsa
             chmod 600 ~/.ssh/id_rsa
             ssh-keyscan -H ${{ secrets.DO_HOST }} >> ~/.ssh/known_hosts
 
