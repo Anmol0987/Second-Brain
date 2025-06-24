@@ -11,6 +11,10 @@ export const Signin = () => {
     const passwordref = useRef<HTMLInputElement>()
     const navigate = useNavigate()
 
+    function useTestCredentials() {
+        usernameref.current!.value = "admin"
+        passwordref.current!.value = "admin1"
+    }
      function signin() {
         const username = usernameref.current?.value
         const password = passwordref.current?.value
@@ -37,10 +41,12 @@ export const Signin = () => {
                 Welcome back! Sign in to your account
             </p>
         </div>
-
         <InputComponent classname="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" reference={usernameref} placeholder="Username" />
         <InputComponent classname="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500" reference={passwordref} placeholder="**************" />
         <div className="flex justify-center pt-4 flex-col">
+    <div className="flex justify-center text-xs text-purple-600 cursor-pointer mb-2" onClick={useTestCredentials}>
+                    USE TEST CREDENTIALS
+                </div>
             <Button loading={false} onClick={signin} variant="primary" title="Signin" fullWidth={true} />
             <Button classname="text-sm text-purple-600 hover:text-purple-500" loading={false} onClick={() => { navigate("/signup") }} title="Don't have an account? Sign up" fullWidth={true} />
         </div>
