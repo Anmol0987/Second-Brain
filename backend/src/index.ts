@@ -159,7 +159,7 @@ app.post(
         });
         res.json({
           message: "Share link created successfully",
-          link: `http://localhost:5173/brain/${link.hash}`,
+          link: `https://secondbrain.notdeveloper.in/brain/${link.hash}`,
         });
         return;
       } else {

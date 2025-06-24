@@ -39,6 +39,7 @@ export function Dashboard() {
                         }
                     });
                     navigator.clipboard.writeText(response.data.link);
+                    
                     alert("Copied to clipboard");
                 }} variant="secondary" title="Share brain" startIcon={<ShareIcon />}></Button>
             </div>
@@ -51,17 +52,6 @@ export function Dashboard() {
                     onDelete={() => refresh()}
                 />)}
             </div>
-            {/* <div className="google-doc-container">
-                <iframe
-                    src="https://docs.google.com/document/d/e/2PACX-1vT7Fy1RVEgXMi9gQbJU-dD5og1m0Y7dZ--W_4iKM4YogJyHIEE4qfaMXW61TCyzpL2OKfl_L_UJ_GSm/pub?embedded=true" // Replace with your Google Doc link
-                    title="Google Document"
-                    style={{
-                        width: "50vw",
-                        height: "80vh",
-                        border: "none",
-                    }}
-                ></iframe>
-            </div> */}
         </div>
     </div>
 }
