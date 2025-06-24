@@ -58,7 +58,7 @@ jobs:
 
             docker run -d \
             --name secondbrain-frontend \
-            -p 80:5173 \
+            -p 5173:5173 \
             --restart always \
             anmolmittal/secondbrain-frontend:latest
             EOF
