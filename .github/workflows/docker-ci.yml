@@ -37,7 +37,7 @@ jobs:
       - name: Deploy to DigitalOcean VM
         run: |
             mkdir -p ~/.ssh
-            echo "${{ secrets.DO_SSH_KEY }}" > ~/.ssh/id_rsa
+            echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
             chmod 600 ~/.ssh/id_rsa
             ssh-keyscan -H ${{ secrets.DO_HOST }} >> ~/.ssh/known_hosts
             ssh -o StrictHostKeyChecking=no -i ~/.ssh/id_rsa root@${{ secrets.DO_HOST }} <<EOF
