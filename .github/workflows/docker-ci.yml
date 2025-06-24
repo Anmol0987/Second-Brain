@@ -34,35 +34,32 @@ jobs:
           tags: |
             anmolmittal/secondbrain-frontend:${{ github.sha }}
             anmolmittal/secondbrain-frontend:latest
-      - name: Setup SSH
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DO_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.DO_HOST }} >> ~/.ssh/known_hosts
       - name: Deploy to DigitalOcean VM
         run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.DO_SSH_KEY }}" > ~/.ssh/id_rsa
-          chmod 700 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.DO_HOST }} >> ~/.ssh/known_hosts
-          ssh -i ~/.ssh/id_rsa root@${{ secrets.DO_HOST }} << EOF
+            mkdir -p ~/.ssh
+            printf "%s" "${{ secrets.DO_SSH_KEY }}" > ~/.ssh/id_rsa
+            chmod 600 ~/.ssh/id_rsa
+            ssh-keyscan -H ${{ secrets.DO_HOST }} >> ~/.ssh/known_hosts
 
-          docker pull anmolmittal/secondbrain-backend:latest
-          docker pull anmolmittal/secondbrain-frontend:latest
-          docker rm -f secondbrain-backend || true
-          docker rm -f secondbrain-frontend || true
-          echo "MONGO_URI=${{ secrets.MONGO_URI }}" > backend.env
+            ssh -i ~/.ssh/id_rsa root@${{ secrets.DO_HOST }} <<EOF
+            docker pull anmolmittal/secondbrain-backend:latest
+            docker pull anmolmittal/secondbrain-frontend:latest
 
-          docker run -d \
-             --name secondbrain-backend \
-             --env-file backend.env \
-             -p 3000:3000 \
-             --restart always \
-             anmolmittal/secondbrain-backend:latest
+            docker rm -f secondbrain-backend || true
+            docker rm -f secondbrain-frontend || true
 
-          docker run -d \
-             --name secondbrain-frontend \
-             -p 80:5173 \
-             --restart always \
-             anmolmittal/secondbrain-frontend:latest
+            echo "MONGO_URI=${{ secrets.MONGO_URI }}" > backend.env
+
+            docker run -d \
+            --name secondbrain-backend \
+            --env-file backend.env \
+            -p 3000:3000 \
+            --restart always \
+            anmolmittal/secondbrain-backend:latest
+
+            docker run -d \
+            --name secondbrain-frontend \
+            -p 80:5173 \
+            --restart always \
+            anmolmittal/secondbrain-frontend:latest
+            EOF
