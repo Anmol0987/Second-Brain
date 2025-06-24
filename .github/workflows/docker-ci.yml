@@ -42,7 +42,11 @@ jobs:
           ssh-keyscan -H ${{ secrets.DO_HOST }} >> ~/.ssh/known_hosts
       - name: Deploy to DigitalOcean VM
         run: |
-          ssh root@${{ secrets.DO_HOST }} << EOF
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DO_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 700 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.DO_HOST }} >> ~/.ssh/known_hosts
+
           docker pull anmolmittal/secondbrain-backend:latest
           docker pull anmolmittal/secondbrain-frontend:latest
           docker rm -f secondbrain-backend || true
