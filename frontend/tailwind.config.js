@@ -20,3 +20,19 @@ export default {
   },
   plugins: [],
 }
+// tailwind.config.js
+module.exports = {
+  theme: {
+    extend: {
+      keyframes: {
+        pulseDot: {
+          '0%, 100%': { transform: 'scale(1)', opacity: '1' },
+          '50%': { transform: 'scale(1.6)', opacity: '0.4' },
+        },
+      },
+      animation: {
+        pulseDot: 'pulseDot 1.2s ease-in-out infinite',
+      },
+    },
+  },
+};
